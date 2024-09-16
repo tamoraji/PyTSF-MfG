@@ -4,7 +4,7 @@ import numpy as np
 
 class Evaluator:
     @staticmethod
-    def calculate_metrics(actual: np.array, predicted: np.array) -> Dict[str, float]:
+    def calculate_metrics(actual: np.array, predicted: np.array) -> dict[str, float]:
         return {
             'mse': mean_squared_error(actual, predicted),
             'mae': mean_absolute_error(actual, predicted),
@@ -12,7 +12,7 @@ class Evaluator:
         }
 
     @staticmethod
-    def aggregate_results(results: Dict[str, Dict[str, float]]) -> Dict[str, float]:
+    def aggregate_results(results: dict[str, dict[str, float]]) -> dict[str, float]:
         aggregated = {}
         for metric in results[next(iter(results))].keys():
             aggregated[metric] = np.mean([r[metric] for r in results.values()])

@@ -1,3 +1,5 @@
+from algorithm_pool import AlgorithmPool
+from dataset_pool import DatasetPool
 class ExperimentRunner:
     def __init__(self, scenarios: list, algorithm_pool: AlgorithmPool, dataset_pool: DatasetPool):
         self.scenarios = scenarios
