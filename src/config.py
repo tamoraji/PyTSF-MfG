@@ -1,34 +1,36 @@
-ALGORITHM_POOL = {
-    'arima': {
-        'class': 'statsmodels.tsa.arima.model.ARIMA',
-        'params': {'order': (1,1,1)}
-    },
-    'prophet': {
-        'class': 'prophet.Prophet',
-        'params': {}
-    },
-    'exponential_smoothing': {
-        'class': 'statsmodels.tsa.holtwinters.ExponentialSmoothing',
-        'params': {'trend': 'add', 'seasonal': 'add', 'seasonal_periods': 12}
-    }
+ALGORITHM = {
+    'name': 'AutoArima',
+    'class': 'statsforecast.models.AutoARIMA',
+    'params': {},
+    'data_format': 'StatsForecast'
 }
+
 
 DATASET_POOL = {
     'air_passengers': {
         'file': 'AirPassengers.csv',
-        'date_column': 'Date',
+        'date_column': 'Month',
         'target_column': 'Passengers',
         'frequency': 'MS'
+    },
+    'stock_prices': {
+        'file': 'ABM.csv',
+        'date_column': 'Date',
+        'target_column': 'Close',
+        'frequency': 'D'
     }
 }
 
-SCENARIOS = [
-    {
-        'name': 'all_algorithms_comparison',
-        'algorithms': ['arima', 'prophet', 'exponential_smoothing'],
-        'datasets': ['air_passengers']
-    }
+METRICS = [
+    "MSE",
+    "RSME",
+    "MAE",
+    "WAPE",
+    "MAPE",
+    "SMAPE",
+    "RAE",
+    "RSE",
+    "MASE",
+    "R2",
 ]
-
-METRICS = ['mse', 'mae', 'rmse']
 OUTPUT_DIR = 'results'

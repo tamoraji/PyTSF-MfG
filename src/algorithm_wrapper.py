@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 import numpy as np
-from statsmodels.tsa.arima.model import ARIMA
+from statsforecast.models import AutoARIMA
 from prophet import Prophet
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
@@ -15,17 +15,17 @@ class BaseAlgorithmWrapper(ABC):
     def predict(self, steps: int) -> np.array:
         pass
 
-class ARIMAWrapper(BaseAlgorithmWrapper):
-    def __init__(self, order=(1,1,1)):
-        self.order = order
+class AutoArimaWrapper(BaseAlgorithmWrapper):
+    def __init__(self):
         self.model = None
 
     def fit(self, data: pd.Series):
-        self.model = ARIMA(data, order=self.order).fit()
+        self.model = AutoARIMA().fit(data['y'])
         return self
 
     def predict(self, steps: int) -> np.array:
-        return self.model.forecast(steps)
+        prediction = self.model.predict(steps)
+        return prediction['mean']
 
 class ProphetWrapper(BaseAlgorithmWrapper):
     def __init__(self):

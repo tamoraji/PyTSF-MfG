@@ -1,8 +1,7 @@
-from typing import Any
 from algorithm_wrapper import BaseAlgorithmWrapper, ARIMAWrapper, ProphetWrapper, ExponentialSmoothingWrapper
 
 class AlgorithmPool:
-    def __init__(self, algorithm_config: dict[str, dict[str, Any]]):
+    def __init__(self, algorithm_config: dict[str, dict[str, any]]):
         self.algorithms = {
             'arima': ARIMAWrapper,
             'prophet': ProphetWrapper,
@@ -16,6 +15,3 @@ class AlgorithmPool:
 
         algo_class = self.algorithms[name]
         return algo_class(**self.config[name]['params'])
-
-    def get_algorithms_subset(self, names: list) -> dict[str, BaseAlgorithmWrapper]:
-        return {name: self.get_algorithm(name) for name in names}
