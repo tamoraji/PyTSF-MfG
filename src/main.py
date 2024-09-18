@@ -3,7 +3,7 @@ from algorithm_factory import create_algorithm
 from dataset_pool import DatasetPool
 from experiment_runner import ExperimentRunner
 from evaluator import Evaluator
-from results_saver import ResultsSaver
+from modules.results_saver import ResultsSaver
 
 
 def main():

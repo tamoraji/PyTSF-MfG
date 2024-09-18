@@ -4,7 +4,7 @@ EPSILON = 1e-10
 
 def _error(actual: np.ndarray, predicted: np.ndarray):
     """ Simple error """
-    return actual - predicted
+    return actual - predicted + EPSILON
 
 
 def _percentage_error(actual: np.ndarray, predicted: np.ndarray):

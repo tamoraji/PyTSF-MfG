@@ -1,4 +1,4 @@
-from metrics import mse, rmse, mae, wape, mape, smape, rae, rse, mase, r2_score
+from modules.metrics import mse, rmse, mae, wape, mape, smape, rae, rse, mase, r2_score
 import numpy as np
 
 
