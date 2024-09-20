@@ -1,7 +1,6 @@
-from src.config import DATASET_POOL
-import pandas as pd
+from modules.config import DATASET_POOL
 import os
-def load_datasets(data_path):
+def load_datasets_statforecast_uni(data_path):
     datasets = {}
     for name, config in DATASET_POOL.items():
         file_path = os.path.join(data_path, config['file'])
