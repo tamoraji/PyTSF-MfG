@@ -2,7 +2,7 @@ from modules.config import ALGORITHM, DATASET_POOL, OUTPUT_DIR
 from modules.algorithm_factory import create_algorithm
 from dataset_pool import DatasetPool
 from experiment_runner import ExperimentRunner
-from evaluator import Evaluator
+from modules.evaluator import Evaluator
 from modules.results_saver import ResultsSaver
 
 

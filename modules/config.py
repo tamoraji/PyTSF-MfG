@@ -1,7 +1,7 @@
 import torch
 ALGORITHM_POOL = {
-    "AutoArima": {
-        'name': 'AutoArima',
+    "AutoARIMA": {
+        'name': 'AutoARIMA',
         'class': 'statsforecast.models.AutoARIMA',
         'params': {},
         'data_format': 'StatsForecast'
@@ -38,7 +38,33 @@ DATASET_POOL = {
         'date_column': 'date',
         'target_column': 'OT',
         'frequency': 'h'
-    }
+    },
+    'ETTm2': {
+        'file': 'ETTm2.csv',
+        'date_column': 'date',
+        'target_column': 'OT',
+        'frequency': '15min'
+    },
+    'ai4i2020': {
+        'file': 'ai4i2020.csv',
+        'date_column': None,
+        'target_column': 'Process temperature [K]',
+        'frequency': 'min'
+    },
+    'Steel_industry_Usage_kWh': {
+        'file': 'Steel_industry.csv',
+        'date_column': 'Date_Time',
+        "date_format": "%d-%m-%Y %H:%M",
+        'target_column': 'Usage_kWh',
+        'frequency': '15min'
+    },
+    'BrentOilPrices': {
+        'file': 'BrentOilPrices.csv',
+        'date_column': 'Date',
+        'date_format': "%d-%b-%y",
+        'target_column': 'Price',
+        'frequency': 'B'
+    },
 }
 
 METRICS = [
