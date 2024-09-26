@@ -43,30 +43,30 @@ def run_experiment(data, name, horizon, algorithm_name):
     # Split the data
     train, test = split_data(data)
 
-    # Scale the data
-    scaler = StandardScaler()
-    train_scaled = pd.DataFrame(scaler.fit_transform(train[['y']]), columns=['y'], index=train.index)
-    test_scaled = pd.DataFrame(scaler.transform(test[['y']]), columns=['y'], index=test.index)
-    print(f"Scaled data - Train shape: {train_scaled.shape}, Test shape: {test_scaled.shape}")
+    # # Scale the data
+    # scaler = StandardScaler()
+    # train_scaled = pd.DataFrame(scaler.fit_transform(train[['y']]), columns=['y'], index=train.index)
+    # test_scaled = pd.DataFrame(scaler.transform(test[['y']]), columns=['y'], index=test.index)
+    # print(f"Scaled data - Train shape: {train_scaled.shape}, Test shape: {test_scaled.shape}")
 
     # Create the model using the factory
     model = create_algorithm(algorithm_name)
     print(f"Model created: {type(model).__name__}")
 
     # Train the model
-    _, train_time, train_memory = train_model(model, train_scaled['y'])
+    _, train_time, train_memory = train_model(model, train['y'])
     print(f"Model trained. Time: {train_time:.2f}s, Memory: {train_memory:.2f}MB")
 
     # Perform autoregressive prediction
     predictions = []
-    history = train_scaled['y'].values
+    history = train['y'].values
 
     test_time = 0
     test_memory = 0
 
     print("Starting autoregressive prediction")
-    for i in range(0, len(test_scaled), horizon):
-        n = min(horizon, len(test_scaled) - i)
+    for i in range(0, len(test), horizon):
+        n = min(horizon, len(test) - i)
         pred, t_time, t_memory = test_model(model, n)
         print(f"Prediction shape: {pred['mean'].shape}")
         test_time += t_time
@@ -84,7 +84,7 @@ def run_experiment(data, name, horizon, algorithm_name):
         print(f'new prediction shape: {len(predictions)}')
 
         # Update history with the true values
-        history = np.append(history, test_scaled['y'].iloc[i:i+n].values)
+        history = np.append(history, test['y'].iloc[i:i+n].values)
         print(f'history shape is:{history.shape}')
 
         # Refit the model with updated history
@@ -92,11 +92,11 @@ def run_experiment(data, name, horizon, algorithm_name):
         model.fit(history)
 
     print("Autoregressive prediction completed")
-    print(f"Total predictions: {len(predictions)}, Expected: {len(test_scaled)}")
+    print(f"Total predictions: {len(predictions)}, Expected: {len(test)}")
 
-    # Inverse transform the predictions
-    predictions = scaler.inverse_transform(np.array(predictions).reshape(-1, 1)).flatten()
-    print(f"Inverse transformed predictions shape: {predictions.shape}")
+    # # Inverse transform the predictions
+    # predictions = scaler.inverse_transform(np.array(predictions).reshape(-1, 1)).flatten()
+    # print(f"Inverse transformed predictions shape: {predictions.shape}")
 
     # Calculate metrics
     actual = test['y'].values
@@ -105,9 +105,9 @@ def run_experiment(data, name, horizon, algorithm_name):
 
     # Add computational complexity metrics
     metrics['train_time'] = train_time
-    metrics['avg_test_time'] = test_time / (len(test_scaled) / horizon)
+    metrics['avg_test_time'] = test_time / (len(test) / horizon)
     metrics['train_memory'] = train_memory
-    metrics['avg_test_memory'] = test_memory / (len(test_scaled) / horizon)
+    metrics['avg_test_memory'] = test_memory / (len(test) / horizon)
     metrics['total_time'] = train_time + test_time
     metrics['total_memory'] = train_memory + test_memory
 
