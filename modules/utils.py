@@ -90,7 +90,7 @@ def load_datasets_statforecast_uni(data_path):
 
                 # If there's no unique_id column, create one using the dataset name and target
                 if 'unique_id' not in df_target.columns:
-                    df_target['unique_id'] = f"{name}_{target}"
+                    df_target['unique_id'] = f"{target}"
 
                 # Select only required columns
                 columns_to_keep = ['unique_id', 'ds', 'y']
