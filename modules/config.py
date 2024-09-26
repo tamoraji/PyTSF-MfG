@@ -105,7 +105,7 @@ DATASET_POOL = {
         'date_column': 'Datetime',
         'date_format': "%Y-%m-%d %H:%M:%S",
         'target_column': 'Temperature',
-        'frequency': '10s'
+        'frequency': '30s'
     },
     'ISO-NY': {
         'file': 'ISO-NY_Central.csv',

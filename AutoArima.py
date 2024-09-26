@@ -27,7 +27,7 @@ def test_model(model, horizon):
     print(f"Predicting for horizon: {horizon}")
     return model.predict(h=horizon)
 
-def split_data(data, split_ratio=0.8):
+def split_data(data, split_ratio=0.9):
     split_index = int(len(data) * split_ratio)
     train = data[:split_index]
     test = data[split_index:]
@@ -137,7 +137,7 @@ if __name__ == "__main__":
         metrics = run_experiment(data, name, args.horizon, args.algorithm)
 
         # Save results
-        saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, name)
+        saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name)
         print(f"Results saved for {args.algorithm} on {name}")
 
         # Print summary of results
