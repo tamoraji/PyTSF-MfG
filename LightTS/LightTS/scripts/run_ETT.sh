@@ -1,0 +1,15 @@
+CUDA_VISIBLE_DEVICES=0 nohup python run_long.py --data ETTh1 --features M  --seq_len  96 --pred_len  24 --chunk_size  24 --hiddim 128 --lr 1e-4 --model_name 'LightTS' --itr True > ETTh1_24.log 2>&1 &
+CUDA_VISIBLE_DEVICES=1 nohup python run_long.py --data ETTh1 --features M  --seq_len 192 --pred_len  48 --chunk_size  48 --hiddim 128 --lr 1e-4 --model_name 'LightTS' --itr True > ETTh1_48.log 2>&1 &
+CUDA_VISIBLE_DEVICES=2 nohup python run_long.py --data ETTh1 --features M  --seq_len 720 --pred_len 168 --chunk_size  72 --hiddim 128 --lr 1e-4 --model_name 'LightTS' --itr True > ETTh1_168.log 2>&1 &
+CUDA_VISIBLE_DEVICES=3 nohup python run_long.py --data ETTh1 --features M  --seq_len 720 --pred_len 336 --chunk_size  72 --hiddim 128 --lr 1e-5 --model_name 'LightTS' --itr True > ETTh1_336.log 2>&1 &
+CUDA_VISIBLE_DEVICES=0 nohup python run_long.py --data ETTh1 --features M  --seq_len 720 --pred_len 720 --chunk_size  72 --hiddim 128 --lr 1e-5 --model_name 'LightTS' --itr True > ETTh1_720.log 2>&1 &
+CUDA_VISIBLE_DEVICES=1 nohup python run_long.py --data ETTh2 --features M  --seq_len  96 --pred_len  24 --chunk_size  24 --hiddim 128 --lr 1e-4 --model_name 'LightTS' --itr True > ETTh2_24.log 2>&1 &
+CUDA_VISIBLE_DEVICES=2 nohup python run_long.py --data ETTh2 --features M  --seq_len 192 --pred_len  48 --chunk_size  48 --hiddim 128 --lr 1e-4 --model_name 'LightTS' --itr True > ETTh2_48.log 2>&1 &
+CUDA_VISIBLE_DEVICES=3 nohup python run_long.py --data ETTh2 --features M  --seq_len 720 --pred_len 168 --chunk_size  72 --hiddim 128 --lr 1e-4 --model_name 'LightTS' --itr True > ETTh2_168.log 2>&1 &
+CUDA_VISIBLE_DEVICES=0 nohup python run_long.py --data ETTh2 --features M  --seq_len 720 --pred_len 336 --chunk_size  72 --hiddim 128 --lr 1e-5 --model_name 'LightTS' --itr True > ETTh2_336.log 2>&1 &
+CUDA_VISIBLE_DEVICES=1 nohup python run_long.py --data ETTh2 --features M  --seq_len 720 --pred_len 720 --chunk_size  72 --hiddim 128 --lr 1e-5 --model_name 'LightTS' --itr True > ETTh2_720.log 2>&1 &
+CUDA_VISIBLE_DEVICES=2 nohup python run_long.py --data ETTm1 --features M  --seq_len  96 --pred_len  24 --chunk_size  24 --hiddim 128 --lr 1e-4 --model_name 'LightTS' --itr True > ETTm1_24.log 2>&1 &
+CUDA_VISIBLE_DEVICES=3 nohup python run_long.py --data ETTm1 --features M  --seq_len 192 --pred_len  48 --chunk_size  48 --hiddim 128 --lr 1e-4 --model_name 'LightTS' --itr True > ETTm1_48.log 2>&1 &
+CUDA_VISIBLE_DEVICES=0 nohup python run_long.py --data ETTm1 --features M  --seq_len 720 --pred_len  96 --chunk_size  72 --hiddim 128 --lr 1e-4 --model_name 'LightTS' --itr True > ETTm1_96.log 2>&1 &
+CUDA_VISIBLE_DEVICES=1 nohup python run_long.py --data ETTm1 --features M  --seq_len 720 --pred_len 288 --chunk_size  72 --hiddim 128 --lr 1e-5 --model_name 'LightTS' --itr True > ETTm1_288.log 2>&1 &
+CUDA_VISIBLE_DEVICES=2 nohup python run_long.py --data ETTm1 --features M  --seq_len 720 --pred_len 672 --chunk_size  72 --hiddim 128 --lr 1e-5 --model_name 'LightTS' --itr True > ETTm1_672.log 2>&1 &
