@@ -137,7 +137,7 @@ if __name__ == "__main__":
     parser.add_argument('--algorithm', type=str, default="TCN", help='Algorithm name (e.g., TCN)')
     parser.add_argument('--horizon', type=int, default=12, help='Forecasting horizon')
     parser.add_argument('--params', type=str, default='{}', help='JSON string of algorithm parameters')
-
+    parser.add_argument('--datasets', nargs='*', help='List of specific datasets to process. If not provided, all datasets will be processed.')
     args = parser.parse_args()
 
     # Parse the JSON string of parameters
@@ -152,6 +152,11 @@ if __name__ == "__main__":
 
     datasets = load_datasets_statforecast_uni(DATA_PATH)
     print(f"Loaded {len(datasets)} datasets")
+
+    # Filter datasets if specific ones are provided
+    if args.datasets:
+        datasets = {name: data for name, data in datasets.items() if name in args.datasets}
+        print(f"Filtered to {len(datasets)} specified datasets")
 
     saver = ResultsSaver(OUTPUT_DIR)
 
