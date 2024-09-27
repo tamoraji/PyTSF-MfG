@@ -10,18 +10,15 @@ class ResultsSaver:
     def save_results(self, results: dict[str, any], algorithm: str, horizon: int, dataset: str):
         filename = f"{algorithm}_{horizon}_{dataset}.json"
         with open(os.path.join(self.output_dir, filename), 'w') as f:
-            json.dump(results, f, cls=NumpyEncoder)
+            json.dump(results, f, cls=NumpyEncoder, indent=4)
 
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return json.JSONEncoder.default(self, obj)
-
-
-class NumpyEncoder(json.JSONEncoder):
-    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)

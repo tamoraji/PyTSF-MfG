@@ -1,8 +1,8 @@
 import argparse
 import pandas as pd
 import numpy as np
-from statsforecast.models import AutoARIMA
-from sklearn.preprocessing import StandardScaler
+import json
+
 from modules.utils import load_datasets_statforecast_uni
 from modules.evaluator import Evaluator
 from modules.results_saver import ResultsSaver
@@ -35,7 +35,7 @@ def split_data(data, split_ratio=0.9):
     print(f"Train data type is:{type(train)}")
     return train, test
 
-def run_experiment(data, name, horizon, algorithm_name):
+def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     print(f"\nStarting experiment for dataset: {name}")
     print(f"Algorithm: {algorithm_name}, Horizon: {horizon}")
     print(f"Initial data shape: {data.shape}")
@@ -43,14 +43,9 @@ def run_experiment(data, name, horizon, algorithm_name):
     # Split the data
     train, test = split_data(data)
 
-    # # Scale the data
-    # scaler = StandardScaler()
-    # train_scaled = pd.DataFrame(scaler.fit_transform(train[['y']]), columns=['y'], index=train.index)
-    # test_scaled = pd.DataFrame(scaler.transform(test[['y']]), columns=['y'], index=test.index)
-    # print(f"Scaled data - Train shape: {train_scaled.shape}, Test shape: {test_scaled.shape}")
 
     # Create the model using the factory
-    model = create_algorithm(algorithm_name)
+    model = create_algorithm(algorithm_name, algorithm_params)
     print(f"Model created: {type(model).__name__}")
 
     # Train the model
@@ -94,9 +89,6 @@ def run_experiment(data, name, horizon, algorithm_name):
     print("Autoregressive prediction completed")
     print(f"Total predictions: {len(predictions)}, Expected: {len(test)}")
 
-    # # Inverse transform the predictions
-    # predictions = scaler.inverse_transform(np.array(predictions).reshape(-1, 1)).flatten()
-    # print(f"Inverse transformed predictions shape: {predictions.shape}")
 
     # Calculate metrics
     actual = test['y'].values
@@ -120,9 +112,18 @@ if __name__ == "__main__":
         description='Run time series forecasting experiment with specified algorithm and forecasting horizon')
     parser.add_argument('--algorithm', type=str, default="AutoARIMA", help='Algorithm name (e.g., AutoARIMA, TCN)')
     parser.add_argument('--horizon', type=int, default=3, help='Forecasting horizon')
+    parser.add_argument('--params', type=str, default='{}', help='JSON string of algorithm parameters')
     args = parser.parse_args()
 
+    # Parse the JSON string of parameters
+    try:
+        algorithm_params = json.loads(args.params)
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON string for parameters")
+        exit(1)
+
     print(f"Starting forecasting experiment with {args.algorithm} algorithm and horizon {args.horizon}")
+    print(f"Algorithm parameters: {algorithm_params}")
 
     datasets = load_datasets_statforecast_uni(DATA_PATH)
     print(f"Loaded {len(datasets)} datasets")
@@ -134,15 +135,19 @@ if __name__ == "__main__":
         print("dataset look like:")
         print(data.head())
 
-        metrics = run_experiment(data, name, args.horizon, args.algorithm)
+        try:
+            metrics = run_experiment(data, name, args.horizon, args.algorithm, algorithm_params)
 
-        # Save results
-        saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name)
-        print(f"Results saved for {args.algorithm} on {name}")
+            # Save results
+            saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name)
+            print(f"Results saved for {args.algorithm} on {name}")
 
-        # Print summary of results
-        print(f"Summary of results for {name}:")
-        for metric, value in metrics.items():
-            print(f"  {metric}: {value}")
+            # Print summary of results
+            print(f"Summary of results for {name}:")
+            for metric, value in metrics.items():
+                print(f"  {metric}: {value}")
+        except Exception as e:
+            print(f"Error processing dataset {name} with algorithm {args.algorithm}: {str(e)}")
+            continue
 
     print("\nAll experiments completed. Results saved.")

@@ -3,22 +3,20 @@ ALGORITHM_POOL = {
     "AutoARIMA": {
         'name': 'AutoARIMA',
         'class': 'statsforecast.models.AutoARIMA',
-        'params': {},
+        'default_params': {},
         'data_format': 'StatsForecast'
     },
-    "TCN":{
+    "TCN": {
         'name': 'TCN',
         'class': 'darts.models.TCNModel',
-        'params': {
-            'input_chunk_length': 50,  # Example value, adjust as needed
-            'output_chunk_length': 3,
-            'output_chunk_shift': 0,
-            'num_layers': 3,
+        'default_params': {
+            'num_layers': 1,
             'num_filters': 64,
-            'kernel_size': 3,
+            'kernel_size': 6,
             'n_epochs': 20,
             'force_reset': "True",
-            'pl_trainer_kwargs': {"accelerator": "cpu"}
+            'pl_trainer_kwargs': {"accelerator": "cpu"},
+            # 'pl_trainer_kwargs': {"accelerator": "gpu", "devices": -1, "auto_select_gpus": True} #To use GPU
         },
         'data_format': 'Darts'
     }
