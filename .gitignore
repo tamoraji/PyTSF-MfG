@@ -5,4 +5,4 @@ venv/
 .idea/
 results/
 data/
-.DS_Store
+.DS_Storetestbed/lightning_logs/
