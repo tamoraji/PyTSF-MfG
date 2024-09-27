@@ -10,8 +10,11 @@ from modules.performance_utils import measure_time_and_memory
 from modules.algorithm_factory import create_algorithm
 
 # Set parameters
-DATA_PATH = '/Users/moji/PyTSF-MfG/data'  # change this in your machine
-OUTPUT_DIR = '/Users/moji/PyTSF-MfG/results'
+# DATA_PATH = '/Users/moji/PyTSF-MfG/data'  # change this in your machine
+# OUTPUT_DIR = '/Users/moji/PyTSF-MfG/results'
+
+DATA_PATH = '/home/ma00048/Moji/TSF_data'
+OUTPUT_DIR = '/home/ma00048/Moji/TSF_results'
 
 @measure_time_and_memory
 def train_model(model, data):
