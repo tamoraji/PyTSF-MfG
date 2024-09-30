@@ -12,6 +12,7 @@ ALGORITHM_POOL = {
         'default_params': {
             'num_layers': 1,
             'num_filters': 64,
+            "dilation_base": 1,
             'kernel_size': 6,
             'n_epochs': 20,
             'force_reset': "True",
@@ -61,7 +62,7 @@ DATASET_POOL = {
         'date_column': 'Date',
         'date_format': "%d-%b-%y",
         'target_column': 'Price',
-        'frequency': 'B'
+        'frequency': 'D'
     },
     'ECL': {
         'file': 'ECL.csv',
@@ -110,7 +111,7 @@ DATASET_POOL = {
         'date_column': 'Time_Stamp',
         'date_format': "%Y-%m-%d %H:%M:%S",
         'target_column': 'Load',
-        'frequency': '10s'
+        'frequency': '15min'
     },
 }
 

@@ -58,7 +58,9 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     # Convert data to TimeSeries
     try:
         series = TimeSeries.from_dataframe(data, 'ds', 'y', freq=frequency)
+        print(series.head())
         series = series.astype(np.float32)
+        print(series.head())
     except Exception as e:
         print(f"Error creating TimeSeries: {str(e)}")
         print(f"Dataset head:\n{data.head()}")
