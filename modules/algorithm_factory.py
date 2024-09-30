@@ -1,6 +1,6 @@
 from modules.config import ALGORITHM_POOL
 from statsforecast.models import AutoARIMA
-from darts.models import TCNModel
+from darts.models import TCNModel, BlockRNNModel
 
 
 def create_algorithm(algorithm_name: str, runtime_params: dict) -> any:
@@ -24,5 +24,7 @@ def create_algorithm(algorithm_name: str, runtime_params: dict) -> any:
         return AutoARIMA(**params)
     elif name == 'TCN':
         return TCNModel(**params)
+    elif name == 'Block_GRU':
+        return BlockRNNModel(**params)
     else:
         raise ValueError(f"Unknown algorithm class: {algorithm_class}")
