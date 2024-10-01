@@ -35,6 +35,20 @@ ALGORITHM_POOL = {
         },
         'data_format': 'Darts'
     },
+    "LSTM": {
+        'name': 'LSTM',
+        'class': 'darts.models.RNNModel',
+        'default_params': {
+            'model': 'LSTM',
+            'hidden_dim': 32,
+            'n_rnn_layers': 2,
+            'n_epochs': 20,
+            'force_reset': "True",
+            'pl_trainer_kwargs': {"accelerator": "cpu"},
+            # 'pl_trainer_kwargs': {"accelerator": "gpu", "devices": -1, "auto_select_gpus": True} #To use GPU
+        },
+        'data_format': 'Darts'
+    },
 }
 
 

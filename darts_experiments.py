@@ -20,6 +20,8 @@ logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 DATA_PATH = '/Users/moji/PyTSF-MfG/data'  # change this in your machine
 OUTPUT_DIR = '/Users/moji/PyTSF-MfG/results'
 
+# DATA_PATH = '/home/ma00048/Moji/TSF_data'  # change this in your machine
+# OUTPUT_DIR = '/home/ma00048/Moji/TSF_results'
 
 @measure_time_and_memory
 def train_model(model, data):
@@ -92,8 +94,8 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
 
     print("Starting autoregressive prediction")
     prediction_length = len(test_scaled)
-    for i in range(0, prediction_length, model.output_chunk_length):
-        n = min(model.output_chunk_length, prediction_length - i)
+    for i in range(0, prediction_length, horizon):
+        n = min(horizon, prediction_length - i)
         pred, t_time, t_memory = test_model(model, n, history)
         test_time += t_time
         test_memory += t_memory
@@ -103,7 +105,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
         # Update history with the true values
         history = history.append(test_scaled[i:i + n])
 
-        print(f"Prediction step {i // model.output_chunk_length + 1}: predicted {len(pred)} values")
+        print(f"Prediction step {i // horizon + 1}: predicted {len(pred)} values")
 
     print("Autoregressive prediction completed")
 
