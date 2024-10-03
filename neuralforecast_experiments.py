@@ -57,16 +57,21 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
 
     logger.info(f"Train shape: {train.shape}, Test shape: {test.shape}")
 
-    # Create the model using the factory
-    model = create_algorithm(algorithm_name, algorithm_params,horizon=horizon)
+    # Create the model
+    model = create_algorithm(algorithm_name, algorithm_params, horizon=horizon)
     logger.info(f"Model created: {type(model).__name__}")
-
     # Wrap the model in NeuralForecast
     nf = NeuralForecast(models=[model], freq=frequency)
 
-    # Train the model
-    _, train_time, train_memory = train_model(nf, train)
-    logger.info(f"Model trained. Time: {train_time:.2f}s, Memory: {train_memory:.2f}MB")
+    # Initialize training metrics
+    train_time = 0
+    train_memory = 0
+
+    # Initial training
+    _, initial_train_time, initial_train_memory = train_model(nf, train)
+    train_time += initial_train_time
+    train_memory += initial_train_memory
+    logger.info(f"Model initially trained. Time: {initial_train_time:.2f}s, Memory: {initial_train_memory:.2f}MB")
 
     # Perform autoregressive prediction
     predictions = []
@@ -76,21 +81,22 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
 
     logger.info("Starting autoregressive prediction")
     for i in range(0, len(test), horizon):
-        test_chunk = test.iloc[i:i+horizon]
-        # logger.info(f"Test chunk:\n{test_chunk}")
+
+        # Make predictions
+        test_chunk = test.iloc[i:i + horizon]
         logger.info(f"Predicting for dates: {test_chunk['ds'].iloc[0]} to {test_chunk['ds'].iloc[-1]}")
 
         forecasts, t_time, t_memory = test_model(nf, test_chunk)
-        logger.info(f"Forecasts:\n{forecasts}")
         test_time += t_time
         test_memory += t_memory
 
         predictions.append(forecasts)
+        logger.info(f"Forecasts:\n{forecasts}")
 
+        # Update history
         history = pd.concat([history, test_chunk])
 
         # Retrain the model with updated history
-        nf = NeuralForecast(models=[model], freq=frequency)
         _, retrain_time, retrain_memory = train_model(nf, history)
         train_time += retrain_time
         train_memory += retrain_memory
@@ -103,16 +109,15 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     combined_predictions = pd.concat(predictions)
 
     # Calculate metrics
-
     actual = test['y'].values
     forecast = combined_predictions[f'{algorithm_name}'].values
     metrics = Evaluator.calculate_metrics(actual, forecast)
 
     # Add computational complexity metrics
     metrics['train_time'] = train_time
-    metrics['avg_test_time'] = test_time / (len(test) / horizon)
+    metrics['avg_test_time'] = test_time / (len(test) // horizon)
     metrics['train_memory'] = train_memory
-    metrics['avg_test_memory'] = test_memory / (len(test) / horizon)
+    metrics['avg_test_memory'] = test_memory / (len(test) // horizon)
     metrics['total_time'] = train_time + test_time
     metrics['total_memory'] = train_memory + test_memory
 
@@ -135,8 +140,23 @@ if __name__ == "__main__":
         print("Error: Invalid JSON string for parameters")
         exit(1)
 
+    # Define training and retraining parameters
+    training_params = {
+        'max_steps': 300,
+        'val_check_steps': 10,
+        # 'early_stop_patience_steps': -1  # Disable early stopping for initial training
+    }
+
+    retraining_params = {
+        'max_steps': 20,
+        'val_check_steps': 5,
+        # 'early_stop_patience_steps': 10
+    }
+
     print(f"Starting forecasting experiment with {args.algorithm} algorithm and horizon {args.horizon}")
     print(f"Algorithm parameters: {algorithm_params}")
+    print(f"Training parameters: {training_params}")
+    print(f"Retraining parameters: {retraining_params}")
 
     datasets = load_datasets_statforecast_uni(DATA_PATH)
     print(f"Loaded {len(datasets)} datasets")
@@ -155,7 +175,6 @@ if __name__ == "__main__":
 
         try:
             metrics = run_experiment(data, name, args.horizon, args.algorithm, algorithm_params)
-
             # Save results
             saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name)
             print(f"Results saved for {args.algorithm} on {name}")

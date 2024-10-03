@@ -60,7 +60,7 @@ ALGORITHM_POOL = {
             'top_k': 5,
             'num_kernels': 6,
             'encoder_layers': 2,
-            'dropout': 0.1,
+            'dropout': 0.2,
             'loss': MSE(),
             'learning_rate': 1e-4,
             'max_steps': 100,
