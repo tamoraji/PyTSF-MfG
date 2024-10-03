@@ -6,4 +6,5 @@ venv/
 results/
 data/
 testbed/lightning_logs/
+lightning_logs/
 .DS_Store
