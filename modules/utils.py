@@ -103,8 +103,8 @@ def load_datasets_statforecast_uni(data_path):
                 datasets[dataset_name] = df_target
 
                 print(f"Dataset shape for {dataset_name}: {df_target.shape}")
-                print(df_target.info())
-                print(df_target.head())
+                # print(df_target.info())
+                # print(df_target.head())
 
                 # Calculate and print the frequency of the time series
                 time_diff = df_target['ds'].diff().mode().iloc[0]

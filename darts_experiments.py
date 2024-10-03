@@ -97,6 +97,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     for i in range(0, prediction_length, horizon):
         n = min(horizon, prediction_length - i)
         pred, t_time, t_memory = test_model(model, n, history)
+        print(f'pred is {pred}')
         test_time += t_time
         test_memory += t_memory
 
@@ -120,7 +121,9 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
 
     # Calculate metrics
     actual = test.pd_dataframe()
+    print(f"Actual: {actual}")
     forecast = predictions.pd_dataframe()
+    print(f"Forecast: {forecast}")
     metrics = Evaluator.calculate_metrics(actual.values, forecast.values)
 
     # Add computational complexity metrics

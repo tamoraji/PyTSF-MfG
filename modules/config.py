@@ -1,4 +1,5 @@
-import torch
+from neuralforecast.losses.pytorch import MSE
+
 ALGORITHM_POOL = {
     "AutoARIMA": {
         'name': 'AutoARIMA',
@@ -48,6 +49,29 @@ ALGORITHM_POOL = {
             # 'pl_trainer_kwargs': {"accelerator": "gpu", "devices": -1, "auto_select_gpus": True} #To use GPU
         },
         'data_format': 'Darts'
+    },
+    "TimesNet": {
+        'name': 'TimesNet',
+        'class': 'neuralforecast.models.TimesNet',
+        'default_params': {
+            # 'h': 6,
+            'input_size': 50,
+            'conv_hidden_size': 32,
+            'top_k': 5,
+            'num_kernels': 6,
+            'encoder_layers': 2,
+            'dropout': 0.1,
+            'loss': MSE(),
+            'learning_rate': 1e-4,
+            'max_steps': 100,
+            # 'val_check_steps': 50,
+            # 'early_stop_patience_steps': 20,
+            'batch_size': 32,
+            'windows_batch_size': 64,
+            'scaler_type': 'minmax',
+            # 'pl_trainer_kwargs': {"accelerator": "cpu"},
+        },
+        'data_format': 'NeuralForecast'
     },
 }
 
