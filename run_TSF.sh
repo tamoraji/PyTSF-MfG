@@ -4,7 +4,7 @@
 horizons=(3 6 12)
 
 # Base command
-base_command="python neuralforecast_experiments.py --algorithm TimesNet
+base_command="python neuralforecast_experiments.py --algorithm TimesNet"
 
 # Loop through horizons
 for horizon in "${horizons[@]}"

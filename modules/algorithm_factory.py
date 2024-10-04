@@ -4,7 +4,7 @@ from enum import Enum
 from modules.config import ALGORITHM_POOL
 from statsforecast.models import AutoARIMA
 from darts.models import TCNModel, RNNModel, BlockRNNModel
-from neuralforecast.models import TimesNet
+from neuralforecast.models import TimesNet, Informer
 from neuralforecast.losses.pytorch import MSE, MAE
 
 # Setup logging
@@ -21,6 +21,7 @@ ALGORITHM_CLASSES = {
     'Block_GRU': BlockRNNModel,
     'LSTM': RNNModel,
     'TimesNet': TimesNet,
+    'Informer': Informer
 }
 
 def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], horizon: int = None) -> any:

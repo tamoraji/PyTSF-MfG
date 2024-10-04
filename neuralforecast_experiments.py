@@ -46,7 +46,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     frequency = dataset_config.get('frequency', 'h')
 
     # Split the data
-    split_ratio = 0.9
+    split_ratio = 0.8
     split_index = int(len(data) * split_ratio)
     train = data[:split_index]
     test = data[split_index:]
