@@ -86,6 +86,19 @@ ALGORITHM_POOL = {
         },
         'data_format': 'NeuralForecast'
     },
+    "MLP": {
+        'name': 'MLP',
+        'class': 'neuralforecast.models.MLP',
+        'default_params': {
+            'input_size': 50,
+            'loss': MSE(),
+            'max_steps': 300,
+            # 'val_check_steps': 50,
+            'batch_size': 32,
+            'scaler_type': 'minmax',
+        },
+        'data_format': 'NeuralForecast'
+    },
 }
 
 
