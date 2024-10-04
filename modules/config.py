@@ -116,9 +116,9 @@ DATASET_POOL = {
     },
     'Steel_industry_Usage_kWh': {
         'file': 'Steel_industry.csv',
-        'date_column': 'ds',
-        "date_format": "%y-%m-%d %H:%M",
-        'target_column': 'y',
+        'date_column': 'Date_Time',
+        "date_format": "%d-%m-%y %H:%M",
+        'target_column': 'Usage_kWh',
         'frequency': '15min'
     },
     'BrentOilPrices': {
