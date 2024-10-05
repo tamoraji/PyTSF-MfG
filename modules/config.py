@@ -92,7 +92,20 @@ ALGORITHM_POOL = {
         'default_params': {
             'input_size': 50,
             'loss': MSE(),
-            'max_steps': 300,
+            'max_steps': 100,
+            # 'val_check_steps': 50,
+            'batch_size': 32,
+            'scaler_type': 'minmax',
+        },
+        'data_format': 'NeuralForecast'
+    },
+    "FEDformer": {
+        'name': 'FEDformer',
+        'class': 'neuralforecast.models.FEDformer',
+        'default_params': {
+            'input_size': 50,
+            'loss': MSE(),
+            'max_steps': 100,
             # 'val_check_steps': 50,
             'batch_size': 32,
             'scaler_type': 'minmax',
