@@ -3,7 +3,7 @@ from enum import Enum
 
 from modules.config import ALGORITHM_POOL
 from statsforecast.models import AutoARIMA
-from darts.models import TCNModel, RNNModel, BlockRNNModel
+from darts.models import TCNModel, RNNModel, BlockRNNModel, XGBModel
 from neuralforecast.models import TimesNet, Informer, MLP, FEDformer
 from neuralforecast.losses.pytorch import MSE, MAE
 
@@ -20,6 +20,7 @@ ALGORITHM_CLASSES = {
     'TCN': TCNModel,
     'Block_GRU': BlockRNNModel,
     'LSTM': RNNModel,
+    'XGBoost': XGBModel,
     'TimesNet': TimesNet,
     'Informer': Informer,
     'MLP': MLP,

@@ -42,7 +42,7 @@ def test_model(model, n, history):
     return model.predict(n=n, series=history)
 
 
-def split_data(series, split_ratio=0.9):
+def split_data(series, split_ratio=0.8):
     train, test = series.split_before(split_ratio)
     print(f"Data split - Train shape: {len(train)}, Test shape: {len(test)}")
     return train, test
@@ -55,21 +55,12 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
 
     # Get dataset-specific configuration
     dataset_config = DATASET_POOL.get(name, {})
-    date_column = dataset_config.get('date_column', 'ds')
-    target_column = dataset_config.get('target_column', 'y')
     frequency = dataset_config.get('frequency', 'h')
-
-    print(f"Expected date column: {date_column}")
-    print(f"Expected target column: {target_column}")
-    print(f"Expected frequency: {frequency}")
-    print(f"Actual columns: {data.columns.tolist()}")
 
     # Convert data to TimeSeries
     try:
         series = TimeSeries.from_dataframe(data, 'ds', 'y', freq=frequency)
-        print(series.head())
         series = series.astype(np.float32)
-        print(series.head())
     except Exception as e:
         print(f"Error creating TimeSeries: {str(e)}")
         print(f"Dataset head:\n{data.head()}")
@@ -104,7 +95,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     for i in range(0, prediction_length, horizon):
         n = min(horizon, prediction_length - i)
         pred, t_time, t_memory = test_model(model, n, history)
-        print(f'pred is {pred}')
+        # print(f'pred is {pred.all_values()}')
         test_time += t_time
         test_memory += t_memory
 

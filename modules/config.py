@@ -50,6 +50,14 @@ ALGORITHM_POOL = {
         },
         'data_format': 'Darts'
     },
+    "XGBoost": {
+        'name': 'XGBoost',
+        'class': 'darts.models.XGBModel',
+        'default_params': {
+            'multi_models': False,
+        },
+        'data_format': 'Darts'
+    },
     "TimesNet": {
         'name': 'TimesNet',
         'class': 'neuralforecast.models.TimesNet',
