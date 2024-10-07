@@ -31,9 +31,8 @@ def train_model(model, data):
 
 
 @measure_time_and_memory
-def test_model(model, test_data):
-    logger.info(f"Predicting for horizon: {len(test_data)}")
-    return model.predict(futr_df=test_data)
+def test_model(model, for_test_data):
+    return model.predict(for_test_data)
 
 
 def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
@@ -54,6 +53,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     # Ensure test set length is a multiple of horizon
     test_length = (len(test) // horizon) * horizon
     test = test[:test_length]
+    print(test.head())
 
     logger.info(f"Train shape: {train.shape}, Test shape: {test.shape}")
 
@@ -86,7 +86,8 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
         test_chunk = test.iloc[i:i + horizon]
         logger.info(f"Predicting for dates: {test_chunk['ds'].iloc[0]} to {test_chunk['ds'].iloc[-1]}")
 
-        forecasts, t_time, t_memory = test_model(nf, test_chunk)
+        logger.info(f"Predicting for horizon: {horizon}")
+        forecasts, t_time, t_memory = test_model(nf, history)
         test_time += t_time
         test_memory += t_memory
 
@@ -95,11 +96,6 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
 
         # Update history
         history = pd.concat([history, test_chunk])
-
-        # Retrain the model with updated history
-        _, retrain_time, retrain_memory = train_model(nf, history)
-        train_time += retrain_time
-        train_memory += retrain_memory
 
         logger.info(f"Prediction step {i // horizon + 1}: predicted {len(forecasts)} values")
 
@@ -140,23 +136,9 @@ if __name__ == "__main__":
         print("Error: Invalid JSON string for parameters")
         exit(1)
 
-    # Define training and retraining parameters
-    training_params = {
-        'max_steps': 300,
-        'val_check_steps': 10,
-        # 'early_stop_patience_steps': -1  # Disable early stopping for initial training
-    }
-
-    retraining_params = {
-        'max_steps': 20,
-        'val_check_steps': 5,
-        # 'early_stop_patience_steps': 10
-    }
 
     print(f"Starting forecasting experiment with {args.algorithm} algorithm and horizon {args.horizon}")
     print(f"Algorithm parameters: {algorithm_params}")
-    print(f"Training parameters: {training_params}")
-    print(f"Retraining parameters: {retraining_params}")
 
     datasets = load_datasets_statforecast_uni(DATA_PATH)
     print(f"Loaded {len(datasets)} datasets")
