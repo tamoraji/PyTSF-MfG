@@ -4,6 +4,7 @@ __pycache__/
 venv/
 .idea/
 results/
+plots/
 data/
 testbed/lightning_logs/
 lightning_logs/

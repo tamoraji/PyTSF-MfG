@@ -54,14 +54,16 @@ def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], horizo
         raise ValueError(f"Unknown algorithm class: {config['class']}")
 
     params = {**config['default_params'], **runtime_params}
+    print(f'the running params are: {params}')
 
-    if horizon is not None:
-        if 'h' in params:
-            logger.warning(f"Overriding default horizon {params['h']} with provided horizon {horizon}")
-        params['h'] = horizon
-    elif 'h' not in params:
-        logger.error(f"Horizon not provided for algorithm {algorithm_name}")
-        raise ValueError(f"Horizon not provided for algorithm {algorithm_name}")
+    if config['data_format'] == 'NeuralForecast':
+        if horizon is not None:
+            if 'h' in params:
+                logger.warning(f"Overriding default horizon {params['h']} with provided horizon {horizon}")
+            params['h'] = horizon
+        elif 'h' not in params:
+            logger.error(f"Horizon not provided for algorithm {algorithm_name}")
+            raise ValueError(f"Horizon not provided for algorithm {algorithm_name}")
 
     if 'loss' in params and isinstance(params['loss'], str):
         try:

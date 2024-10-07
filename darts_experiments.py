@@ -9,6 +9,8 @@ from modules.results_saver import ResultsSaver
 from modules.performance_utils import measure_time_and_memory
 from modules.algorithm_factory import create_algorithm
 from modules.config import DATASET_POOL
+from modules.plot_utils import plot_forecast_vs_actual
+import os
 
 import warnings
 import logging
@@ -19,9 +21,14 @@ logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 # Set parameters
 DATA_PATH = '/Users/moji/PyTSF-MfG/data'  # change this in your machine
 OUTPUT_DIR = '/Users/moji/PyTSF-MfG/results'
+PLOT_DIR = '/Users/moji/PyTSF-MfG/plots'  # Directory for plots
 
 # DATA_PATH = '/home/ma00048/Moji/TSF_data'  # change this in your machine
 # OUTPUT_DIR = '/home/ma00048/Moji/TSF_results'
+# PLOT_DIR = '/home/ma00048/Moji/plots'  # Directory for plots
+
+# Create PLOT_DIR if it doesn't exist
+os.makedirs(PLOT_DIR, exist_ok=True)
 
 @measure_time_and_memory
 def train_model(model, data):
@@ -133,6 +140,8 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     metrics['avg_test_memory'] = test_memory / (len(test) / horizon)
     metrics['total_time'] = train_time + test_time
     metrics['total_memory'] = train_memory + test_memory
+
+    plot_forecast_vs_actual(actual, forecast, name, algorithm_name, horizon, PLOT_DIR)
 
     print("Experiment completed")
     return metrics

@@ -11,13 +11,13 @@ ALGORITHM_POOL = {
         'name': 'TCN',
         'class': 'darts.models.TCNModel',
         'default_params': {
-            'num_layers': 1,
+            'num_layers': 2,
             'num_filters': 64,
-            "dilation_base": 1,
+            "dilation_base": 2,
             'kernel_size': 6,
-            'n_epochs': 20,
+            'n_epochs': 100,
             'force_reset': "True",
-            'pl_trainer_kwargs': {"accelerator": "cpu"},
+            # 'pl_trainer_kwargs': {"accelerator": "cpu"},
             # 'pl_trainer_kwargs': {"accelerator": "gpu", "devices": -1, "auto_select_gpus": True} #To use GPU
         },
         'data_format': 'Darts'
@@ -29,7 +29,7 @@ ALGORITHM_POOL = {
             'model': 'GRU',
             'hidden_dim': 32,
             'n_rnn_layers': 2,
-            'n_epochs': 20,
+            'n_epochs': 100,
             'force_reset': "True",
             'pl_trainer_kwargs': {"accelerator": "cpu"},
             # 'pl_trainer_kwargs': {"accelerator": "gpu", "devices": -1, "auto_select_gpus": True} #To use GPU
@@ -43,7 +43,7 @@ ALGORITHM_POOL = {
             'model': 'LSTM',
             'hidden_dim': 32,
             'n_rnn_layers': 2,
-            'n_epochs': 20,
+            'n_epochs': 100,
             'force_reset': "True",
             'pl_trainer_kwargs': {"accelerator": "cpu"},
             # 'pl_trainer_kwargs': {"accelerator": "gpu", "devices": -1, "auto_select_gpus": True} #To use GPU
@@ -56,7 +56,7 @@ ALGORITHM_POOL = {
         'default_params': {
             'input_size': 50,
             'loss': MSE(),
-            'max_steps': 300,
+            'max_steps': 100,
             'batch_size': 32,
             'scaler_type': 'minmax',
         },
@@ -68,7 +68,7 @@ ALGORITHM_POOL = {
         'default_params': {
             'input_size': 50,
             'loss': MSE(),
-            'max_steps': 300,
+            'max_steps': 100,
             'batch_size': 32,
             'scaler_type': 'minmax',
         },
@@ -80,7 +80,7 @@ ALGORITHM_POOL = {
         'default_params': {
             'input_size': 50,
             'loss': MSE(),
-            'max_steps': 300,
+            'max_steps': 100,
             'batch_size': 32,
             'scaler_type': 'minmax',
         },
