@@ -106,6 +106,18 @@ ALGORITHM_POOL = {
         },
         'data_format': 'NeuralForecast'
     },
+    "TimeLLM": {
+        'name': 'TimeLLM',
+        'class': 'neuralforecast.models.TimeLLM',
+        'default_params': {
+            'input_size': 50,
+            'loss': MSE(),
+            'max_steps': 100,
+            'batch_size': 32,
+            'scaler_type': 'minmax',
+        },
+        'data_format': 'NeuralForecast'
+    },
 }
 
 
