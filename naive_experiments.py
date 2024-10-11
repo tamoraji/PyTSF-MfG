@@ -28,20 +28,41 @@ PLOT_DIR = '/Users/moji/PyTSF-MfG/plots'  # Directory for plots
 os.makedirs(PLOT_DIR, exist_ok=True)
 
 @measure_time_and_memory
-def naive_forecast(history, horizon):
+def naive_forecast(history, horizon, name, frequency):
+
     last_value = history['y'].iloc[-1]
-    forecast = pd.DataFrame({
-        'ds': pd.date_range(start=history['ds'].iloc[-1] + pd.Timedelta(1, unit=DATASET_POOL.get(name, {}).get('frequency', 'h')),
-                            periods=horizon,
-                            freq=DATASET_POOL.get(name, {}).get('frequency', 'h')),
-        'naive_forecast': [last_value] * horizon
-    })
+
+    try:
+        last_date = history['ds'].iloc[-1]
+        forecast = pd.DataFrame({
+            'ds': pd.date_range(start=last_date, periods=horizon + 1, freq=frequency)[1:],
+            'naive_forecast': [last_value] * horizon
+        })
+        logger.info(f"Forecast date range: {forecast['ds'].min()} to {forecast['ds'].max()}")
+        logger.info(f"Forecast frequency: {frequency}")
+        logger.info(f"Number of forecast points: {len(forecast)}")
+
+        if len(forecast) != horizon:
+            logger.warning(f"Number of forecast points ({len(forecast)}) does not match horizon ({horizon})")
+
+
+    except ValueError as e:
+        logger.error(f"Error creating forecast for {name}: {str(e)}")
+        logger.error(f"Last historical date: {last_date}")
+        raise
+
     return forecast
 
 def run_experiment(data, name, horizon):
     logger.info(f"\nStarting experiment for dataset: {name}")
     logger.info(f"Algorithm: Naive Forecast, Horizon: {horizon}")
     logger.info(f"Initial data shape: {data.shape}")
+
+    dataset_config = DATASET_POOL.get(name, {})
+    logger.info(f"dataset config is: {dataset_config}")
+    frequency = dataset_config.get('frequency', 'h')
+    logger.info(f"The inferred freq is: {frequency}")
+
 
     # Split the data
     split_ratio = 0.8
@@ -67,7 +88,7 @@ def run_experiment(data, name, horizon):
         test_chunk = test.iloc[i:i + horizon]
         logger.info(f"Predicting for dates: {test_chunk['ds'].iloc[0]} to {test_chunk['ds'].iloc[-1]}")
 
-        forecasts, t_time, t_memory = naive_forecast(history, horizon)
+        forecasts, t_time, t_memory = naive_forecast(history, horizon, name, frequency)
         test_time += t_time
         test_memory += t_memory
 
