@@ -98,7 +98,7 @@ ALGORITHM_POOL = {
         'name': 'FEDformer',
         'class': 'neuralforecast.models.FEDformer',
         'default_params': {
-            'input_size': 50,
+            'input_size': 1000,
             'loss': MSE(),
             'max_steps': 100,
             'batch_size': 32,
@@ -117,6 +117,42 @@ ALGORITHM_POOL = {
             'scaler_type': 'minmax',
         },
         'data_format': 'NeuralForecast'
+    },
+    "NBEATS": {
+        'name': 'NBEATS',
+        'class': 'neuralforecast.models.NBEATS',
+        'default_params': {
+            'input_size': 50,
+            'loss': MSE(),
+            'max_steps': 100,
+            'batch_size': 32,
+            'scaler_type': 'minmax',
+        },
+        'data_format': 'NeuralForecast'
+    },
+    "NHITS": {
+        'name': 'NHITS',
+        'class': 'neuralforecast.models.NHITS',
+        'default_params': {
+            'input_size': 1000,
+            'loss': MSE(),
+            'max_steps': 100,
+            'batch_size': 32,
+            'scaler_type': 'minmax',
+        },
+        'data_format': 'NeuralForecast'
+    },
+    'SegRNN': {
+        'name': 'SegRNN',
+        'default_params': {
+            'seq_len': 100,
+            'enc_in': 1,
+            'd_model': 512,
+            'dropout': 0.1,
+            'seg_len': 5,
+            'task_name': 'long_term_forecast'
+        },
+        'data_format': 'TSLib',
     },
 }
 

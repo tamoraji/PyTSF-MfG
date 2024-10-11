@@ -4,8 +4,9 @@ from enum import Enum
 from modules.config import ALGORITHM_POOL
 from statsforecast.models import AutoARIMA
 from darts.models import TCNModel, RNNModel, BlockRNNModel, XGBModel
-from neuralforecast.models import TimesNet, Informer, MLP, FEDformer, TimeLLM
+from neuralforecast.models import TimesNet, Informer, MLP, FEDformer, TimeLLM, NHITS, NBEATS
 from neuralforecast.losses.pytorch import MSE, MAE
+from TSLib.models.SegRNN import Model as SegRNN  # Import the existing SegRNN model
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -14,6 +15,11 @@ logger = logging.getLogger(__name__)
 class LossFunction(Enum):
     MSE = MSE()
     MAE = MAE()
+
+class Config:
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
 ALGORITHM_CLASSES = {
     'AutoARIMA': AutoARIMA,
@@ -26,6 +32,9 @@ ALGORITHM_CLASSES = {
     'MLP': MLP,
     'FEDformer': FEDformer,
     'TimeLLM': TimeLLM,
+    'NHITS': NHITS,
+    'NBEATS': NBEATS,
+    'SegRNN': SegRNN  # Add SegRNN to the ALGORITHM_CLASSES dictionary
 }
 
 def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], horizon: int = None) -> any:
@@ -58,12 +67,12 @@ def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], horizo
     params = {**config['default_params'], **runtime_params}
     print(f'the running params are: {params}')
 
-    if config['data_format'] == 'NeuralForecast':
+    if config['data_format'] == 'NeuralForecast' or config['name'] == 'SegRNN':
         if horizon is not None:
             if 'h' in params:
                 logger.warning(f"Overriding default horizon {params['h']} with provided horizon {horizon}")
-            params['h'] = horizon
-        elif 'h' not in params:
+            params['pred_len'] = horizon  # Use pred_len for SegRNN
+        elif 'pred_len' not in params:
             logger.error(f"Horizon not provided for algorithm {algorithm_name}")
             raise ValueError(f"Horizon not provided for algorithm {algorithm_name}")
 
@@ -77,7 +86,13 @@ def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], horizo
     logger.debug(f"Final parameters for {algorithm_name}: {params}")
 
     try:
-        return algorithm_class(**params)
+        if algorithm_name == 'SegRNN':
+            # Create a Config object with all parameters
+            config_obj = Config(**params)
+            # Initialize SegRNN with the Config object
+            return algorithm_class(config_obj)
+        else:
+            return algorithm_class(**params)
     except TypeError as e:
         logger.error(f"Invalid parameters for {algorithm_name}: {str(e)}")
         raise ValueError(f"Invalid parameters for {algorithm_name}: {str(e)}")
