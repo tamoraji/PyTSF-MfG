@@ -45,6 +45,7 @@ ALGORITHM_POOL = {
             'n_rnn_layers': 2,
             'n_epochs': 100,
             'force_reset': "True",
+            'training_length': 1000, #TODO:
             'pl_trainer_kwargs': {"accelerator": "cpu"},
             # 'pl_trainer_kwargs': {"accelerator": "gpu", "devices": -1, "auto_select_gpus": True} #To use GPU
         },
@@ -133,6 +134,18 @@ ALGORITHM_POOL = {
     "NHITS": {
         'name': 'NHITS',
         'class': 'neuralforecast.models.NHITS',
+        'default_params': {
+            'input_size': 1000,
+            'loss': MSE(),
+            'max_steps': 100,
+            'batch_size': 32,
+            'scaler_type': 'minmax',
+        },
+        'data_format': 'NeuralForecast'
+    },
+    "TiDE": {
+        'name': 'TiDE',
+        'class': 'neuralforecast.models.TiDE',
         'default_params': {
             'input_size': 1000,
             'loss': MSE(),
