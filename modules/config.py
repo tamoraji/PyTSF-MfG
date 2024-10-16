@@ -155,6 +155,18 @@ ALGORITHM_POOL = {
         },
         'data_format': 'NeuralForecast'
     },
+    "BiTCN": {
+        'name': 'BiTCN',
+        'class': 'neuralforecast.models.BiTCN',
+        'default_params': {
+            'input_size': 1000,
+            'loss': MSE(),
+            'max_steps': 100,
+            'batch_size': 32,
+            'scaler_type': 'minmax',
+        },
+        'data_format': 'NeuralForecast'
+    },
     'SegRNN': {
         'name': 'SegRNN',
         'default_params': {
