@@ -40,7 +40,7 @@ def test_model(model, for_test_data):
     return model.predict(for_test_data)
 
 
-def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='univariate'):
+def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode):
     logger.info(f"\nStarting experiment for dataset: {name}")
     logger.info(f"Algorithm: {algorithm_name}, Horizon: {horizon}")
     logger.info(f"Initial data shape: {data.shape}")
@@ -48,7 +48,8 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='
     # Get dataset-specific configuration
     dataset_config = DATASET_POOL.get(name, {})
     frequency = dataset_config.get('frequency', 'h')
-    hist_exog_columns = dataset_config.get('hist_exog_columns', []) if mode == 'multivariate' else None
+    hist_exog_list = dataset_config.get('hist_exog_list', []) if mode == 'multivariate' else None
+    logger.info(f"History exogenous columns: {hist_exog_list}")
 
     # Split the data
     split_ratio = 0.8
@@ -64,8 +65,10 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='
     logger.info(f"Train shape: {train.shape}, Test shape: {test.shape}")
 
     # Create the model
-    model = create_algorithm(algorithm_name, algorithm_params, horizon=horizon, hist_exog_columns=hist_exog_columns)
+    model = create_algorithm(algorithm_name, algorithm_params, mode, horizon=horizon, hist_exog_list=hist_exog_list)
     logger.info(f"Model created: {type(model).__name__}")
+    # If the above doesn't work, try:
+    logger.info(f"Model parameters: {model.__dict__}")
     # Wrap the model in NeuralForecast
     nf = NeuralForecast(models=[model], freq=frequency)
 
@@ -82,6 +85,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='
     # Perform autoregressive prediction
     predictions = []
     history = train.copy()
+    logger.info(f"Train shape: {history.shape}")
     test_time = 0
     test_memory = 0
 
@@ -90,10 +94,12 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='
 
         # Make predictions
         test_chunk = test.iloc[i:i + horizon]
+        logger.info(f"Test chunk shape: {test_chunk.shape}")
         logger.info(f"Predicting for dates: {test_chunk['ds'].iloc[0]} to {test_chunk['ds'].iloc[-1]}")
 
         logger.info(f"Predicting for horizon: {horizon}")
         forecasts, t_time, t_memory = test_model(nf, history)
+        logger.info(f"Forecasts: {forecasts.shape}")
         test_time += t_time
         test_memory += t_memory
 
@@ -102,6 +108,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='
 
         # Update history
         history = pd.concat([history, test_chunk])
+        logger.info(f"history shape:\n{history.shape}")
 
         logger.info(f"Prediction step {i // horizon + 1}: predicted {len(forecasts)} values")
 

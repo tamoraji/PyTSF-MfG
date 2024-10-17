@@ -194,28 +194,28 @@ DATASET_POOL = {
         'date_column': 'date',
         'target_column': 'OT',
         'frequency': 'h',
-        'hist_exog_columns': ['HUFL', 'HULL', 'MUFL', 'MULL', 'LUFL', 'LULL']
+        'hist_exog_list': ['HUFL', 'HULL', 'MUFL', 'MULL', 'LUFL', 'LULL']
     },
     'ETTm2': {
         'file': 'ETTm2.csv',
         'date_column': 'date',
         'target_column': 'OT',
         'frequency': '15min',
-        'hist_exog_columns': ['HUFL', 'HULL', 'MUFL', 'MULL', 'LUFL', 'LULL']
+        'hist_exog_list': ['HUFL', 'HULL', 'MUFL', 'MULL', 'LUFL', 'LULL']
     },
     'ai4i2020': {
         'file': 'ai4i2020.csv',
         'date_column': None,
         'target_column': 'Process_temperature',
         'frequency': 'min',
-        'hist_exog_columns': ['Air temperature [K]', 'Rotational speed [rpm]', 'Torque [Nm]']
+        'hist_exog_list': ['Air temperature [K]', 'Rotational speed [rpm]', 'Torque [Nm]']
     },
     'Steel_industry_Usage_kWh': {
         'file': 'Steel_industry.csv',
         'date_column': 'Date_Time',
         "date_format": "%y-%m-%d %H:%M%S",
         'target_column': 'Usage_kWh',
-        'hist_exog_columns': ['Lagging_Current_Reactive.Power_kVarh', 'Leading_Current_Reactive_Power_kVarh', 'CO2(tCO2)', 'Lagging_Current_Power_Factor', 'Leading_Current_Power_Factor'],
+        'hist_exog_list': ['Lagging_Current_Reactive.Power_kVarh', 'Leading_Current_Reactive_Power_kVarh', 'CO2(tCO2)', 'Lagging_Current_Power_Factor', 'Leading_Current_Power_Factor'],
         'frequency': '15min'
     },
     'BrentOilPrices': {
@@ -230,7 +230,7 @@ DATASET_POOL = {
         'date_column': 'date',
         'date_format': "%Y-%m-%d %H:%M:%S",
         'target_column': 'MT_320',
-        'hist_exog_columns': ['MT_313', 'MT_314', 'MT_315', 'MT_316', 'MT_317', 'MT_318', 'MT_319'],
+        'hist_exog_list': ['MT_313', 'MT_314', 'MT_315', 'MT_316', 'MT_317', 'MT_318', 'MT_319'],
         'frequency': 'h'
     },
     'Monroe Water Treatment Plant': {
@@ -238,7 +238,7 @@ DATASET_POOL = {
         'date_column': 'date',
         'date_format': "%m-%d-%y",
         'target_column': 'total_kwh',
-        'hist_exog_columns': ['kwh1', 'kw1', 'billed_kwh', 'mg_finish'],
+        'hist_exog_list': ['kwh1', 'kw1', 'billed_kwh', 'mg_finish'],
         'frequency': 'D'
     },
     'Appliances Energy': {
@@ -254,7 +254,7 @@ DATASET_POOL = {
         'date_column': 'Date',
         'date_format': "%Y-%m-%d %H:%M:%S",
         'target_column': 'Rented_Bike_Count',
-        'hist_exog_columns': ['Temperature(°C)', 'Humidity(%)', 'Wind speed (m/s)', 'Visibility (10m)', 'Dew point temperature(°C)'],
+        'hist_exog_list': ['Temperature(°C)', 'Humidity(%)', 'Wind speed (m/s)', 'Visibility (10m)', 'Dew point temperature(°C)'],
         'frequency': 'h'
     },
     'Gas sensor dynamic gas mixtures': {
@@ -262,7 +262,7 @@ DATASET_POOL = {
         'date_column': 'Date',
         'date_format': "%Y-%m-%d %H:%M:%S",
         'target_column': 'sensor_16',
-        'hist_exog_columns': ['sensor 10', 'sensor 11', 'sensor 12', 'sensor 13', 'sensor 14', 'sensor 15'],
+        'hist_exog_list': ['sensor 10', 'sensor 11', 'sensor 12', 'sensor 13', 'sensor 14', 'sensor 15'],
         'frequency': 's'
     },
     'Gas sensor temperature modulation': {
@@ -270,7 +270,7 @@ DATASET_POOL = {
         'date_column': 'Datetime',
         'date_format': "%Y-%m-%d %H:%M:%S",
         'target_column': 'Temperature',
-        'hist_exog_columns': ['Humidity (%r.h.)', 'Flow rate (mL/min)', 'Heater voltage (V)', 'R1 (MOhm)'],
+        'hist_exog_list': ['Humidity (%r.h.)', 'Flow rate (mL/min)', 'Heater voltage (V)', 'R1 (MOhm)'],
         'frequency': '30s'
     },
     'ISO-NY': {
@@ -285,7 +285,7 @@ DATASET_POOL = {
         'date_column': 'Timestamp',
         'date_format': "%Y-%m-%d %H:%M:%S",
         'target_column': 'Global_active_power',
-        'hist': ['Voltage', 'Sub_metering_1', 'Sub_metering_2', 'Sub_metering_3'],
+        'hist_exog_list': ['Voltage', 'Sub_metering_1', 'Sub_metering_2', 'Sub_metering_3'],
         'frequency': 'h'
     },
 }

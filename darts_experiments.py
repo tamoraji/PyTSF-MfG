@@ -48,7 +48,7 @@ def split_data(series, split_ratio=0.8):
     return train, test
 
 
-def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
+def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='univariate'):
     print(f"\nStarting experiment for dataset: {name}")
     print(f"Algorithm: {algorithm_name}, Horizon: {horizon}")
     print(f"Initial data shape: {len(data)}")
@@ -56,10 +56,13 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     # Get dataset-specific configuration
     dataset_config = DATASET_POOL.get(name, {})
     frequency = dataset_config.get('frequency', 'h')
+    hist_exog_columns = dataset_config.get('hist_exog_columns', []) if mode == 'multivariate' else None
 
-    # Convert data to TimeSeries
     try:
-        series = TimeSeries.from_dataframe(data, 'ds', 'y', freq=frequency)
+        if mode == 'univariate':
+            series = TimeSeries.from_dataframe(data, 'ds', 'y', freq=frequency)
+        else:
+            series = TimeSeries.from_dataframe(data, 'ds', ['y'] + hist_exog_columns, freq=frequency)
         series = series.astype(np.float32)
     except Exception as e:
         print(f"Error creating TimeSeries: {str(e)}")
@@ -76,7 +79,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     print(f"Scaled data - Train length: {len(train_scaled)}, Test length: {len(test_scaled)}")
 
     # Create the model using the factory
-    model = create_algorithm(algorithm_name, algorithm_params)
+    model = create_algorithm(algorithm_name, algorithm_params, hist_exog_columns=hist_exog_columns)
     print(f"Model created: {type(model).__name__}")
 
     # Train the model
@@ -145,6 +148,7 @@ if __name__ == "__main__":
     parser.add_argument('--horizon', type=int, default=12, help='Forecasting horizon')
     parser.add_argument('--params', type=str, default='{}', help='JSON string of algorithm parameters')
     parser.add_argument('--datasets', nargs='*', help='List of specific datasets to process. If not provided, all datasets will be processed.')
+    parser.add_argument('--mode', type=str, default='univariate', choices=['univariate', 'multivariate'], help='Forecasting mode')
     args = parser.parse_args()
 
     # Parse the JSON string of parameters
@@ -173,14 +177,13 @@ if __name__ == "__main__":
         print(data.head())
 
         try:
-            metrics = run_experiment(data, name, args.horizon, args.algorithm, algorithm_params)
-
+            metrics = run_experiment(data, name, args.horizon, args.algorithm, algorithm_params, mode=args.mode)
             # Save results
-            saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name)
+            saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name, args.mode)
             print(f"Results saved for {args.algorithm} on {name}")
 
             # Print summary of results
-            print(f"Summary of results for {name} with {args.algorithm}:")
+            print(f"Summary of results for {name} with {args.algorithm} in {args.mode} mode:")
             for metric, value in metrics.items():
                 print(f"  {metric}: {value}")
         except Exception as e:
