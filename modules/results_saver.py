@@ -7,8 +7,8 @@ class ResultsSaver:
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
 
-    def save_results(self, results: dict[str, any], algorithm: str, horizon: int, dataset: str):
-        filename = f"{algorithm}_{horizon}_{dataset}.json"
+    def save_results(self, results: dict[str, any], algorithm: str, horizon: int, dataset: str, mode: str):
+        filename = f"{algorithm}_{horizon}_{dataset}_{mode}.json"
         with open(os.path.join(self.output_dir, filename), 'w') as f:
             json.dump(results, f, cls=NumpyEncoder, indent=4)
 

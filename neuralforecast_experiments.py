@@ -167,11 +167,11 @@ if __name__ == "__main__":
         try:
             metrics = run_experiment(data, name, args.horizon, args.algorithm, algorithm_params, mode=args.mode)
             # Save results
-            saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name)
-            print(f"Results saved for {args.algorithm} on {name}")
+            saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name, args.mode)
+            print(f"Results saved for {args.algorithm} on {name} in {args.mode} mode")
 
             # Print summary of results
-            print(f"Summary of results for {name}:")
+            print(f"Summary of results for {name} in {args.mode} mode:")
             for metric, value in metrics.items():
                 print(f"  {metric}: {value}")
         except Exception as e:
