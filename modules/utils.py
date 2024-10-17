@@ -93,7 +93,7 @@ def load_datasets_statforecast_uni(data_path):
                     df_target['unique_id'] = f"{target}"
 
                 # Select only required columns
-                columns_to_keep = ['unique_id', 'ds', 'y']
+                columns_to_keep = ['unique_id', 'ds', 'y'] + config.get('hist_exog_columns', [])
 
                 # Ensure all specified columns exist in the dataframe
                 existing_columns = [col for col in columns_to_keep if col in df_target.columns]

@@ -40,7 +40,7 @@ def test_model(model, for_test_data):
     return model.predict(for_test_data)
 
 
-def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
+def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='univariate'):
     logger.info(f"\nStarting experiment for dataset: {name}")
     logger.info(f"Algorithm: {algorithm_name}, Horizon: {horizon}")
     logger.info(f"Initial data shape: {data.shape}")
@@ -48,6 +48,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     # Get dataset-specific configuration
     dataset_config = DATASET_POOL.get(name, {})
     frequency = dataset_config.get('frequency', 'h')
+    hist_exog_columns = dataset_config.get('hist_exog_columns', []) if mode == 'multivariate' else None
 
     # Split the data
     split_ratio = 0.8
@@ -63,7 +64,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
     logger.info(f"Train shape: {train.shape}, Test shape: {test.shape}")
 
     # Create the model
-    model = create_algorithm(algorithm_name, algorithm_params, horizon=horizon)
+    model = create_algorithm(algorithm_name, algorithm_params, horizon=horizon, hist_exog_columns=hist_exog_columns)
     logger.info(f"Model created: {type(model).__name__}")
     # Wrap the model in NeuralForecast
     nf = NeuralForecast(models=[model], freq=frequency)
@@ -134,6 +135,7 @@ if __name__ == "__main__":
     parser.add_argument('--horizon', type=int, default=12, help='Forecasting horizon')
     parser.add_argument('--params', type=str, default='{}', help='JSON string of algorithm parameters')
     parser.add_argument('--datasets', nargs='*', help='List of specific datasets to process. If not provided, all datasets will be processed.')
+    parser.add_argument('--mode', type=str, default='univariate', choices=['univariate', 'multivariate'], help='Forecasting mode')
     args = parser.parse_args()
 
     # Parse the JSON string of parameters
@@ -163,7 +165,7 @@ if __name__ == "__main__":
         print(data.head())
 
         try:
-            metrics = run_experiment(data, name, args.horizon, args.algorithm, algorithm_params)
+            metrics = run_experiment(data, name, args.horizon, args.algorithm, algorithm_params, mode=args.mode)
             # Save results
             saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name)
             print(f"Results saved for {args.algorithm} on {name}")

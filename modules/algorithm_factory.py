@@ -39,7 +39,7 @@ ALGORITHM_CLASSES = {
     'SegRNN': SegRNN  # Add SegRNN to the ALGORITHM_CLASSES dictionary
 }
 
-def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], horizon: int = None) -> any:
+def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], horizon: int = None, mode: str = 'univariate', hist_exog_columns: list = None) -> any:
     """
     Create and return an instance of the specified forecasting algorithm.
 
@@ -47,6 +47,8 @@ def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], horizo
         algorithm_name (str): Name of the algorithm to create.
         runtime_params (Dict[str, Any]): Parameters to override default configuration.
         horizon (int, optional): Forecasting horizon. Defaults to None.
+        mode (str, optional): 'univariate' or 'multivariate'. Defaults to 'univariate'.
+        hist_exog_columns (list, optional): List of historic exogenous columns. Required for multivariate mode.
 
     Returns:
         Any: An instance of the specified forecasting algorithm.
@@ -80,6 +82,16 @@ def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], horizo
 
     if config['data_format'] == 'NeuralForecast':
         params['h'] = horizon
+
+    if mode == 'multivariate':
+        if not hist_exog_columns:
+            logger.error("Historic exogenous columns must be provided for multivariate mode")
+            raise ValueError("Historic exogenous columns must be provided for multivariate mode")
+        if config['data_format'] == 'NeuralForecast':
+            params['hist_exog_list'] = hist_exog_columns
+        elif config['data_format'] == 'Darts':
+            params['covariates'] = hist_exog_columns
+        # Add similar conditions for other data formats if needed
 
     if 'loss' in params and isinstance(params['loss'], str):
         try:
