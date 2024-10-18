@@ -74,14 +74,13 @@ def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], mode, 
     if config['data_format'] == 'NeuralForecast':
         params['h'] = horizon
 
-    if mode == 'multivariate':
-        if not hist_exog_list:
-            logger.error("Historic exogenous columns must be provided for multivariate mode")
-            raise ValueError("Historic exogenous columns must be provided for multivariate mode")
-        if config['data_format'] == 'NeuralForecast':
-            params['hist_exog_list'] = hist_exog_list
-        elif config['data_format'] == 'Darts':
-            params['covariates'] = hist_exog_list
+    if config['data_format'] == 'NeuralForecast':
+        if mode == 'multivariate':
+            if not hist_exog_list:
+                logger.error("Historic exogenous columns must be provided for multivariate mode")
+                raise ValueError("Historic exogenous columns must be provided for multivariate mode")
+            else:
+                params['hist_exog_list'] = hist_exog_list
         # Add similar conditions for other data formats if needed
 
     logger.info(f'the updated params are: {params}')

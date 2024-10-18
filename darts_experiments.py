@@ -17,6 +17,8 @@ import logging
 
 warnings.filterwarnings("ignore")
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Set parameters
 DATA_PATH = '/Users/moji/PyTSF-MfG/data'  # change this in your machine
@@ -31,24 +33,26 @@ PLOT_DIR = '/Users/moji/PyTSF-MfG/plots'  # Directory for plots
 os.makedirs(PLOT_DIR, exist_ok=True)
 
 @measure_time_and_memory
-def train_model(model, data):
+def train_model(model, data , past_cov = None):
     print(f"Training model on data of shape: {len(data)}")
-    return model.fit(data)
+    return model.fit(data, past_covariates=past_cov)
 
 
 @measure_time_and_memory
-def test_model(model, n, history):
+def test_model(model, n, history, past_cov=None):
     print(f"Predicting for horizon: {n}")
-    return model.predict(n=n, series=history)
+    pred = model.predict(n=n, series=history, past_covariates=past_cov)
+    return pred
 
 
 def split_data(series, split_ratio=0.8):
     train, test = series.split_before(split_ratio)
     print(f"Data split - Train shape: {len(train)}, Test shape: {len(test)}")
+    print(f"train timestamps: {train.time_index}, Test timestamps: {test.time_index}")
     return train, test
 
 
-def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='univariate'):
+def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode):
     print(f"\nStarting experiment for dataset: {name}")
     print(f"Algorithm: {algorithm_name}, Horizon: {horizon}")
     print(f"Initial data shape: {len(data)}")
@@ -56,14 +60,16 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='
     # Get dataset-specific configuration
     dataset_config = DATASET_POOL.get(name, {})
     frequency = dataset_config.get('frequency', 'h')
-    hist_exog_columns = dataset_config.get('hist_exog_columns', []) if mode == 'multivariate' else None
+    hist_exog_list = dataset_config.get('hist_exog_list', []) if mode == 'multivariate' else None
 
     try:
         if mode == 'univariate':
             series = TimeSeries.from_dataframe(data, 'ds', 'y', freq=frequency)
         else:
-            series = TimeSeries.from_dataframe(data, 'ds', ['y'] + hist_exog_columns, freq=frequency)
+            series = TimeSeries.from_dataframe(data, 'ds', 'y', freq=frequency)
+            past_cov = TimeSeries.from_dataframe(data, 'ds', hist_exog_list, freq=frequency)
         series = series.astype(np.float32)
+        past_cov = past_cov.astype(np.float32)
     except Exception as e:
         print(f"Error creating TimeSeries: {str(e)}")
         print(f"Dataset head:\n{data.head()}")
@@ -71,6 +77,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='
 
     # Split the data
     train, test = split_data(series)
+    past_cov_train, past_cov_test = split_data(past_cov)
 
     # Scale the data
     scaler = Scaler()
@@ -79,16 +86,19 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='
     print(f"Scaled data - Train length: {len(train_scaled)}, Test length: {len(test_scaled)}")
 
     # Create the model using the factory
-    model = create_algorithm(algorithm_name, algorithm_params, hist_exog_columns=hist_exog_columns)
+    model = create_algorithm(algorithm_name, algorithm_params, mode)
     print(f"Model created: {type(model).__name__}")
 
     # Train the model
-    _, train_time, train_memory = train_model(model, train_scaled)
+    # past_cov = train[hist_exog_list] if hist_exog_list else None
+    logger.info(f'past cov time is: {past_cov_train.time_index}')
+    _, train_time, train_memory = train_model(model, train_scaled, past_cov_train)
     print(f"Model trained. Time: {train_time:.2f}s, Memory: {train_memory:.2f}MB")
 
     # Perform autoregressive prediction
     predictions = []
     history = train_scaled
+    past_cov_history = past_cov_train
 
     test_time = 0
     test_memory = 0
@@ -97,15 +107,26 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='
     prediction_length = len(test_scaled)
     for i in range(0, prediction_length, horizon):
         n = min(horizon, prediction_length - i)
-        pred, t_time, t_memory = test_model(model, n, history)
-        # print(f'pred is {pred.all_values()}')
+
+        print(f"Predicting for timestamps: {test_scaled.time_index[i:i+n]}")
+        print(f"Past cov timestamps: {past_cov_history.time_index}")
+        print(f"step: {i+1}")
+
+
+        pred, t_time, t_memory = test_model(model, n, history, past_cov_history)
         test_time += t_time
         test_memory += t_memory
+
+        # Debug print: Show the timestamps of the predictions
+        print(f"Prediction timestamps: {pred.time_index}")
+        print(f"Prediction values: {pred.values()}")
 
         predictions.append(pred)
 
         # Update history with the true values
         history = history.append(test_scaled[i:i + n])
+        past_cov_history = past_cov_history.append(past_cov_test[i:i + n])
+
 
         print(f"Prediction step {i // horizon + 1}: predicted {len(pred)} values")
 
@@ -121,7 +142,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode='
     print(f"Inverse transformed predictions shape: {len(predictions)}")
 
     # Calculate metrics
-    actual = test.pd_dataframe()
+    actual = test['y'].pd_dataframe()
     print(f"Actual: {actual}")
     forecast = predictions.pd_dataframe()
     print(f"Forecast: {forecast}")
