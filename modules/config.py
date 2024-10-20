@@ -167,6 +167,18 @@ ALGORITHM_POOL = {
         },
         'data_format': 'NeuralForecast'
     },
+    "PatchTST": {
+        'name': 'PatchTST',
+        'class': 'neuralforecast.models.PatchTST',
+        'default_params': {
+            'input_size': 50,
+            'loss': MSE(),
+            'max_steps': 100,
+            'batch_size': 32,
+            'scaler_type': 'minmax',
+        },
+        'data_format': 'NeuralForecast'
+    },
     'SegRNN': {
         'name': 'SegRNN',
         'default_params': {

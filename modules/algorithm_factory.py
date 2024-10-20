@@ -4,7 +4,7 @@ from enum import Enum
 from modules.config import ALGORITHM_POOL
 from statsforecast.models import AutoARIMA
 from darts.models import TCNModel, RNNModel, BlockRNNModel, XGBModel
-from neuralforecast.models import TimesNet, Informer, MLP, FEDformer, TimeLLM, NHITS, NBEATS, TiDE, BiTCN
+from neuralforecast.models import TimesNet, Informer, MLP, FEDformer, TimeLLM, NHITS, NBEATS, TiDE, BiTCN, PatchTST
 from neuralforecast.losses.pytorch import MSE, MAE
 from TSLib.models.SegRNN import Model as SegRNN  # Import the existing SegRNN model
 
@@ -36,6 +36,7 @@ ALGORITHM_CLASSES = {
     'NBEATS': NBEATS,
     'TiDE': TiDE,
     'BiTCN': BiTCN,
+    'PatchTST': PatchTST,
     'SegRNN': SegRNN  # Add SegRNN to the ALGORITHM_CLASSES dictionary
 }
 
