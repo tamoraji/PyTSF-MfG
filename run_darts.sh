@@ -4,7 +4,7 @@
 horizons=(3 6 12)
 
 # Base command
-base_command="python darts_experiments.py --algorithm Block_GRU --params"
+base_command="python darts_experiments.py --algorithm Block_GRU --mode multivariate --params"
 
 # Loop through horizons
 for horizon in "${horizons[@]}"
