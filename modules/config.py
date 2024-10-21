@@ -22,6 +22,17 @@ ALGORITHM_POOL = {
         },
         'data_format': 'Darts'
     },
+    "DLinear": {
+        'name': 'DLinear',
+        'class': 'darts.models.forecasting.dlinear.DLinearModel',
+        'default_params': {
+            'n_epochs': 100,
+            'force_reset': "True",
+            'pl_trainer_kwargs': {"accelerator": "cpu"},
+            # 'pl_trainer_kwargs': {"accelerator": "gpu", "devices": -1, "auto_select_gpus": True} #To use GPU
+        },
+        'data_format': 'Darts'
+    },
     "Block_GRU": {
         'name': 'Block_GRU',
         'class': 'darts.models.BlockRNNModel',

@@ -4,6 +4,7 @@ from enum import Enum
 from modules.config import ALGORITHM_POOL
 from statsforecast.models import AutoARIMA
 from darts.models import TCNModel, RNNModel, BlockRNNModel, XGBModel
+from darts.models.forecasting.dlinear import DLinearModel
 from neuralforecast.models import TimesNet, Informer, MLP, FEDformer, TimeLLM, NHITS, NBEATS, TiDE, BiTCN, PatchTST, TSMixerx
 from neuralforecast.losses.pytorch import MSE, MAE
 from TSLib.models.SegRNN import Model as SegRNN  # Import the existing SegRNN model
@@ -25,6 +26,7 @@ ALGORITHM_CLASSES = {
     'AutoARIMA': AutoARIMA,
     'TCN': TCNModel,
     'Block_GRU': BlockRNNModel,
+    'DLinear': DLinearModel,
     'LSTM': RNNModel,
     'XGBoost': XGBModel,
     'TimesNet': TimesNet,
