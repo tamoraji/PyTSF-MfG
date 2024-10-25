@@ -13,6 +13,9 @@ from modules.algorithm_factory import create_algorithm
 DATA_PATH = '/Users/moji/PyTSF-MfG/data'  # change this in your machine
 OUTPUT_DIR = '/Users/moji/PyTSF-MfG/results'
 
+# DATA_PATH = '/home/ma00048/Moji/TSF_data'  # change this in your machine
+# OUTPUT_DIR = '/home/ma00048/Moji/TSF_results'
+
 @measure_time_and_memory
 def train_model(model, data):
     print(f"Training model on data of shape: {data.shape}")
@@ -82,9 +85,9 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode):
         history = np.append(history, test['y'].iloc[i:i+n].values)
         print(f'history shape is:{history.shape}')
 
-        # Refit the model with updated history
-        print(f"Refitting model with history of length: {len(history)}")
-        model.fit(history)
+        # # Refit the model with updated history
+        # print(f"Refitting model with history of length: {len(history)}")
+        # model.fit(history)
 
     print("Autoregressive prediction completed")
     print(f"Total predictions: {len(predictions)}, Expected: {len(test)}")
@@ -146,7 +149,7 @@ if __name__ == "__main__":
             metrics = run_experiment(data, name, args.horizon, args.algorithm, algorithm_params, mode=args.mode)
 
             # Save results
-            saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name)
+            saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name, args.mode)
             print(f"Results saved for {args.algorithm} on {name}")
 
             # Print summary of results

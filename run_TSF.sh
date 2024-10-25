@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Array of horizons to test
-horizons=(3 6 12)
+horizons=(3 6 12 96 288 672)
 
 # Array of algorithms to test
-algorithms=("PatchTST" "iTransformer")
+algorithms=("AutoARIMA")
 
 # Base command
-base_command="python neuralforecast_experiments.py --mode multivariate"
+base_command="python AutoArima.py --mode multivariate"
 
 # Loop through algorithms
 for algorithm in "${algorithms[@]}"
