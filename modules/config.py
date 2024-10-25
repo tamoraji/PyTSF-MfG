@@ -192,9 +192,23 @@ ALGORITHM_POOL = {
     },
     "TSMixerx": {
         'name': 'TSMixerx',
-        'class': 'neuralforecast.models.PatchTST',
+        'class': 'neuralforecast.models.TSMixerx',
         'default_params': {
             'input_size': 50,
+            'n_series': 1,
+            'loss': MSE(),
+            'max_steps': 100,
+            'batch_size': 32,
+            'scaler_type': 'minmax',
+        },
+        'data_format': 'NeuralForecast'
+    },
+    "iTransformer": {
+        'name': 'iTransformer',
+        'class': 'neuralforecast.models.iTransformer',
+        'default_params': {
+            'input_size': 50,
+            'n_series': 1,
             'loss': MSE(),
             'max_steps': 100,
             'batch_size': 32,
