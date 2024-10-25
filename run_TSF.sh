@@ -3,22 +3,35 @@
 # Array of horizons to test
 horizons=(3 6 12)
 
-# Base command
-base_command="python neuralforecast_experiments.py --algorithm PatchTST --mode multivariate"
+# Array of algorithms to test
+algorithms=("PatchTST" "iTransformer")
 
-# Loop through horizons
-for horizon in "${horizons[@]}"
+# Base command
+base_command="python neuralforecast_experiments.py --mode multivariate"
+
+# Loop through algorithms
+for algorithm in "${algorithms[@]}"
 do
-    echo "Running experiment with horizon $horizon"
-    
-    # Construct the full command
-    full_command="$base_command --horizon $horizon"
-    
-    # Execute the command
-    eval $full_command
-    
-    echo "Experiment with horizon $horizon completed"
-    echo "----------------------------------------"
+    echo "Starting experiments for algorithm: $algorithm"
+    echo "=========================================="
+
+    # Loop through horizons for each algorithm
+    for horizon in "${horizons[@]}"
+    do
+        echo "Running experiment with $algorithm, horizon $horizon"
+
+        # Construct the full command
+        full_command="$base_command --algorithm $algorithm --horizon $horizon"
+
+        # Execute the command
+        eval $full_command
+
+        echo "Experiment with $algorithm, horizon $horizon completed"
+        echo "----------------------------------------"
+    done
+
+    echo "All horizons completed for $algorithm"
+    echo "==========================================\n"
 done
 
-echo "All experiments completed"
+echo "All experiments completed successfully"
