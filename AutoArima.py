@@ -27,7 +27,7 @@ def test_model(model, horizon):
     print(f"Predicting for horizon: {horizon}")
     return model.predict(h=horizon)
 
-def split_data(data, split_ratio=0.9):
+def split_data(data, split_ratio=0.8):
     split_index = int(len(data) * split_ratio)
     train = data[:split_index]
     test = data[split_index:]
@@ -35,7 +35,7 @@ def split_data(data, split_ratio=0.9):
     print(f"Train data type is:{type(train)}")
     return train, test
 
-def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
+def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode):
     print(f"\nStarting experiment for dataset: {name}")
     print(f"Algorithm: {algorithm_name}, Horizon: {horizon}")
     print(f"Initial data shape: {data.shape}")
@@ -45,7 +45,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params):
 
 
     # Create the model using the factory
-    model = create_algorithm(algorithm_name, algorithm_params)
+    model = create_algorithm(algorithm_name, algorithm_params, mode)
     print(f"Model created: {type(model).__name__}")
 
     # Train the model
@@ -114,6 +114,7 @@ if __name__ == "__main__":
     parser.add_argument('--horizon', type=int, default=3, help='Forecasting horizon')
     parser.add_argument('--params', type=str, default='{}', help='JSON string of algorithm parameters')
     parser.add_argument('--datasets', nargs='*', help='List of specific datasets to process. If not provided, all datasets will be processed.')
+    parser.add_argument('--mode', type=str, default='univariate', choices=['univariate', 'multivariate'], help='Forecasting mode')
     args = parser.parse_args()
 
     # Parse the JSON string of parameters
@@ -142,7 +143,7 @@ if __name__ == "__main__":
         print(data.head())
 
         try:
-            metrics = run_experiment(data, name, args.horizon, args.algorithm, algorithm_params)
+            metrics = run_experiment(data, name, args.horizon, args.algorithm, algorithm_params, mode=args.mode)
 
             # Save results
             saver.save_results({f'horizon_{args.horizon}': metrics}, args.algorithm, args.horizon, name)
