@@ -33,16 +33,19 @@ PLOT_DIR = '/Users/moji/PyTSF-MfG/plots'  # Directory for plots
 os.makedirs(PLOT_DIR, exist_ok=True)
 
 @measure_time_and_memory
-def train_model(model, data , past_cov = None):
+def train_model(model, data, past_cov=None):
     print(f"Training model on data of shape: {len(data)}")
-    return model.fit(data, past_covariates=past_cov)
+    if past_cov is not None:
+        return model.fit(data, past_covariates=past_cov)
+    return model.fit(data)
 
 
 @measure_time_and_memory
 def test_model(model, n, history, past_cov=None):
     print(f"Predicting for horizon: {n}")
-    pred = model.predict(n=n, series=history, past_covariates=past_cov)
-    return pred
+    if past_cov is not None:
+        return model.predict(n=n, series=history, past_covariates=past_cov)
+    return model.predict(n=n, series=history)
 
 
 def split_data(series, split_ratio=0.8):
@@ -60,16 +63,25 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode):
     # Get dataset-specific configuration
     dataset_config = DATASET_POOL.get(name, {})
     frequency = dataset_config.get('frequency', 'h')
-    hist_exog_list = dataset_config.get('hist_exog_list', []) if mode == 'multivariate' else None
 
     try:
-        if mode == 'univariate':
-            series = TimeSeries.from_dataframe(data, 'ds', 'y', freq=frequency)
-        else:
-            series = TimeSeries.from_dataframe(data, 'ds', 'y', freq=frequency)
-            past_cov = TimeSeries.from_dataframe(data, 'ds', hist_exog_list, freq=frequency)
+        # Create main time series
+        series = TimeSeries.from_dataframe(data, 'ds', 'y', freq=frequency)
         series = series.astype(np.float32)
-        past_cov = past_cov.astype(np.float32)
+
+        # Handle past covariates for multivariate mode
+        if mode == 'multivariate':
+            hist_exog_list = dataset_config.get('hist_exog_list', [])
+            if not hist_exog_list:
+                raise ValueError(f"No historical exogenous variables specified for multivariate mode in dataset {name}")
+
+            past_cov = TimeSeries.from_dataframe(data, 'ds', hist_exog_list, freq=frequency)
+            past_cov = past_cov.astype(np.float32)
+            past_cov_train, past_cov_test = split_data(past_cov)
+        else:
+            past_cov_train = None
+            past_cov_test = None
+
     except Exception as e:
         print(f"Error creating TimeSeries: {str(e)}")
         print(f"Dataset head:\n{data.head()}")
@@ -77,7 +89,7 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode):
 
     # Split the data
     train, test = split_data(series)
-    past_cov_train, past_cov_test = split_data(past_cov)
+
 
     # Scale the data
     scaler = Scaler()
@@ -90,15 +102,13 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode):
     print(f"Model created: {type(model).__name__}")
 
     # Train the model
-    # past_cov = train[hist_exog_list] if hist_exog_list else None
-    logger.info(f'past cov time is: {past_cov_train.time_index}')
     _, train_time, train_memory = train_model(model, train_scaled, past_cov_train)
     print(f"Model trained. Time: {train_time:.2f}s, Memory: {train_memory:.2f}MB")
 
     # Perform autoregressive prediction
     predictions = []
     history = train_scaled
-    past_cov_history = past_cov_train
+    past_cov_history = past_cov_train if mode == 'multivariate' else None
 
     test_time = 0
     test_memory = 0
@@ -108,10 +118,11 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode):
     for i in range(0, prediction_length, horizon):
         n = min(horizon, prediction_length - i)
 
-        print(f"Predicting for timestamps: {test_scaled.time_index[i:i+n]}")
-        print(f"Past cov timestamps: {past_cov_history.time_index}")
-        print(f"step: {i+1}")
+        if mode == 'multivariate':
+            print(f"Past cov timestamps: {past_cov_history.time_index}")
 
+        print(f"Predicting for timestamps: {test_scaled.time_index[i:i+n]}")
+        print(f"step: {i+1}")
 
         pred, t_time, t_memory = test_model(model, n, history, past_cov_history)
         test_time += t_time
@@ -119,14 +130,12 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode):
 
         # Debug print: Show the timestamps of the predictions
         print(f"Prediction timestamps: {pred.time_index}")
-        print(f"Prediction values: {pred.values()}")
-
         predictions.append(pred)
 
         # Update history with the true values
         history = history.append(test_scaled[i:i + n])
-        past_cov_history = past_cov_history.append(past_cov_test[i:i + n])
-
+        if mode == 'multivariate' and past_cov_test is not None:
+            past_cov_history = past_cov_history.append(past_cov_test[i:i + n])
 
         print(f"Prediction step {i // horizon + 1}: predicted {len(pred)} values")
 

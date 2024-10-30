@@ -285,7 +285,7 @@ DATASET_POOL = {
     'Monroe Water Treatment Plant': {
         'file': 'MWTP_Elec_Daily.csv',
         'date_column': 'date',
-        'date_format': "%m-%d-%y",
+        'date_format': "%Y-%m-%d",
         'target_column': 'total_kwh',
         'hist_exog_list': ['kwh1', 'kw1', 'billed_kwh', 'mg_finish'],
         'frequency': 'D'
@@ -295,7 +295,7 @@ DATASET_POOL = {
         'date_column': 'date',
         'date_format': "%Y-%m-%d %H:%M:%S",
         'target_column': 'Press_mm_hg',
-        'hist_exog_columns': ["T_out", "RH_out", "Windspeed", "Visibility", "Tdewpoint"],
+        'hist_exog_list': ["T_out", "RH_out", "Windspeed", "Visibility", "Tdewpoint"],
         'frequency': '10min'
     },
     'Seoul Bike Demand': {
