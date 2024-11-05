@@ -60,14 +60,12 @@ def run_experiment(data, name, horizon, algorithm_name, algorithm_params, mode):
     # Ensure test set length is a multiple of horizon
     test_length = (len(test) // horizon) * horizon
     test = test[:test_length]
-    print(test.head())
 
     logger.info(f"Train shape: {train.shape}, Test shape: {test.shape}")
 
     # Create the model
     model = create_algorithm(algorithm_name, algorithm_params, mode, horizon=horizon, hist_exog_list=hist_exog_list)
     logger.info(f"Model created: {type(model).__name__}")
-    # If the above doesn't work, try:
     logger.info(f"Model parameters: {model.__dict__}")
     # Wrap the model in NeuralForecast
     nf = NeuralForecast(models=[model], freq=frequency)

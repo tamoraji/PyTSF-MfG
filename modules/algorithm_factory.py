@@ -7,7 +7,6 @@ from darts.models import TCNModel, RNNModel, BlockRNNModel, XGBModel
 from darts.models.forecasting.dlinear import DLinearModel
 from neuralforecast.models import TimesNet, Informer, MLP, FEDformer, TimeLLM, NHITS, NBEATS, TiDE, BiTCN, PatchTST, TSMixerx, iTransformer, TFT
 from neuralforecast.losses.pytorch import MSE, MAE
-from TSLib.models.SegRNN import Model as SegRNN  # Import the existing SegRNN model
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -42,7 +41,6 @@ ALGORITHM_CLASSES = {
     'TSMixerx': TSMixerx,
     'iTransformer': iTransformer,
     'TFT': TFT,
-    'SegRNN': SegRNN  # Add SegRNN to the ALGORITHM_CLASSES dictionary
 }
 
 def create_algorithm(algorithm_name: str, runtime_params: dict[str, any], mode, horizon: int = None, hist_exog_list: list = None) -> any:
